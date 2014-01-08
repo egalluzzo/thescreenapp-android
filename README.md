@@ -1,4 +1,4 @@
-thescreenapp-android
-====================
+The Screen App
+==============
 
 An app to help you conduct interviews.  This is the Android version.
