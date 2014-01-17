@@ -1,4 +1,4 @@
-package com.thescreenapp.android;
+package com.thescreenapp.android.view;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -20,6 +20,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.thescreenapp.android.R;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -52,6 +54,7 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
+    private String[] mTitles;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -96,17 +99,19 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                // FIXME: These titles should be passed into the setUp method.
-                new String[]{
-                        getString(R.string.title_section_candidates),
-                        getString(R.string.title_section_interviews)
-                }));
-        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+        setUpDrawerListViewContents();
         return mDrawerListView;
+    }
+    
+    private void setUpDrawerListViewContents() {
+    	if (mDrawerListView != null) {
+	        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+	                getActionBar().getThemedContext(),
+	                android.R.layout.simple_list_item_activated_1,
+	                android.R.id.text1,
+	                ((mTitles == null) ? new String[0] : mTitles)));
+	        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+    	}
     }
 
     public boolean isDrawerOpen() {
@@ -119,9 +124,12 @@ public class NavigationDrawerFragment extends Fragment {
      * @param fragmentId   The android:id of this fragment in its activity's layout.
      * @param drawerLayout The DrawerLayout containing this fragment's UI.
      */
-    public void setUp(int fragmentId, DrawerLayout drawerLayout) {
+    public void setUp(int fragmentId, DrawerLayout drawerLayout, String[] titles) {
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
+        mTitles = titles;
+        
+        setUpDrawerListViewContents();
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
