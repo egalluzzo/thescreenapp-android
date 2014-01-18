@@ -14,7 +14,8 @@ public class ScreenDbHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		
+		db.execSQL(ScreenContract.Candidate.STATEMENT_CREATE_TABLE);
+		db.execSQL(ScreenContract.Interview.STATEMENT_CREATE_TABLE);
 	}
 
 	@Override

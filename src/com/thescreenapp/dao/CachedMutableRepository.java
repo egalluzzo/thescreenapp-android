@@ -1,6 +1,7 @@
 package com.thescreenapp.dao;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.thescreenapp.model.ScreenModelObject;
@@ -12,7 +13,7 @@ public class CachedMutableRepository<T extends ScreenModelObject> implements Mut
 	
 	public CachedMutableRepository(MutableRepository<T> delegate) {
 		mDelegate = delegate;
-		Iterable<T> objects = delegate.findAll();
+		List<T> objects = delegate.findAll().all();
 		for (T object : objects) {
 			mIdToObjectMap.put(object.getId(), object);
 			mUuidToObjectMap.put(object.getUuid(), object);
@@ -44,8 +45,8 @@ public class CachedMutableRepository<T extends ScreenModelObject> implements Mut
 	}
 
 	@Override
-	public Iterable<T> findAll() {
-		return mIdToObjectMap.values();
+	public Query<T> findAll() {
+		return new ListQuery<T>(mIdToObjectMap.values().iterator());
 	}
 	
 	@Override

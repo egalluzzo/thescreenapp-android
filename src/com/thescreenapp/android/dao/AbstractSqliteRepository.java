@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 
 import com.thescreenapp.dao.AbstractMutableRepository;
+import com.thescreenapp.dao.Query;
 import com.thescreenapp.model.ScreenModelObject;
 
 /**
@@ -17,7 +18,68 @@ import com.thescreenapp.model.ScreenModelObject;
  * @author eric
  */
 public abstract class AbstractSqliteRepository<T extends ScreenModelObject> extends AbstractMutableRepository<T> {
-	ScreenDbHelper mDbHelper;
+	protected ScreenDbHelper mDbHelper;
+	
+	/**
+	 * A {@link Query} that uses an Android SQLite {@link Cursor} to iterate
+	 * over its results.
+	 */
+	public class CursorQuery implements Query<T> {
+		private Cursor mCursor;
+		private boolean mMovedToFirst;
+		private T mCurrent;
+		
+		public CursorQuery(Cursor cursor) {
+			mCursor = cursor;
+			mMovedToFirst = false;
+		}
+		
+		public Cursor getCursor() {
+			return mCursor;
+		}
+		
+		@Override
+		public boolean next() {
+			boolean hasNext;
+			if (mMovedToFirst) {
+				hasNext = mCursor.moveToNext();
+			} else {
+				hasNext = mCursor.moveToFirst();
+				mMovedToFirst = true;
+			}
+			
+			mCurrent = hasNext ? readObject(mCursor) : null;
+			return hasNext;
+		}
+
+		@Override
+		public T current() throws IllegalStateException {
+			if (mCurrent == null) {
+				throw new IllegalStateException("No row is currently under the cursor");
+			}
+			return mCurrent;
+		}
+
+		@Override
+		public List<T> all() {
+			List<T> results = new ArrayList<T>();
+			if (mCursor.moveToFirst()) {
+				do {
+					results.add(readObject(mCursor));
+				} while (mCursor.moveToNext());
+			}
+			return results;
+		}
+
+		@Override
+		public void close() {
+			if (mCursor != null) {
+				mCursor.close();
+				mCursor = null;
+				mCurrent = null;
+			}
+		}
+	}
 	
 	public AbstractSqliteRepository(ScreenDbHelper dbHelper) {
 		mDbHelper = dbHelper;
@@ -25,7 +87,7 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 
 	@Override
 	public void delete(ScreenModelObject object) {
-		mDbHelper.getWritableDatabase().delete(getTableName(), "ID = ?", new String[] { String.valueOf(object.getId()) });
+		mDbHelper.getWritableDatabase().delete(getTableName(), ScreenBaseColumns._ID + " = ?", new String[] { String.valueOf(object.getId()) });
 	}
 
 	@Override
@@ -39,7 +101,7 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 	}
 
 	@Override
-	public Iterable<T> findAll() {
+	public Query<T> findAll() {
 		return find(null, null);
 	}
 
@@ -56,45 +118,39 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 		}
 	}
 	
-	protected List<T> find(String selection, String[] selectionArgs) {
+	protected Query<T> find(String selection, String[] selectionArgs) {
 		return find(selection, selectionArgs, null);
 	}
 	
-	protected List<T> find(String selection, String[] selectionArgs, String sortBy) {
+	protected Query<T> find(String selection, String[] selectionArgs, String sortBy) {
 		return find(selection, selectionArgs, sortBy, null);
 	}
 	
-	protected List<T> find(String selection, String[] selectionArgs, String sortBy, String limit) {
-		List<T> results = new ArrayList<T>();
+	protected Query<T> find(String selection, String[] selectionArgs, String sortBy, String limit) {
 		Cursor cursor = query(selection, selectionArgs, sortBy, limit);
-		if (cursor.moveToFirst()) {
-			do {
-				results.add(readObject(cursor));
-			} while (cursor.moveToNext());
+		try {
+			return new CursorQuery(cursor);
+		} finally {
+			cursor.close();
 		}
-		return results;
 	}
 	
 	protected T findSingle(String selection, String[] selectionArgs) {
 		Cursor cursor = query(selection, selectionArgs, null, "2");
-		if (cursor.moveToFirst()) {
-			T result = readObject(cursor);
-			if (cursor.moveToNext()) {
-				throw new SQLException("Expected one " + getTableName() + " record, got more than one");
+		try {
+			if (cursor.moveToFirst()) {
+				T result = readObject(cursor);
+				if (cursor.moveToNext()) {
+					throw new SQLException("Expected one " + getTableName() + " record, got more than one");
+				} else {
+					return result;
+				}
 			} else {
-				return result;
+				return null;
 			}
-		} else {
-			return null;
+		} finally {
+			cursor.close();
 		}
-	}
-	
-	protected Cursor query(String selection, String[] selectionArgs) {
-		return query(selection, selectionArgs, null);
-	}
-	
-	protected Cursor query(String selection, String[] selectionArgs, String sortBy) {
-		return query(selection, selectionArgs, sortBy, null);
 	}
 	
 	protected Cursor query(String selection, String[] selectionArgs, String sortBy, String limit) {
