@@ -13,7 +13,7 @@ public class ScreenContract {
         public static final String TABLE_NAME = "candidate";
         
         public static final String COLUMN_NAME_FIRST_NAME = "first_name";
-        public static final String COLUMN_NAME_LAST_NAME = "first_name";
+        public static final String COLUMN_NAME_LAST_NAME = "last_name";
         public static final String COLUMN_NAME_PHONE_NUMBER = "phone_number";
         public static final String COLUMN_NAME_RATING = "rating";
         

@@ -1,13 +1,12 @@
 package com.thescreenapp.android.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.util.SparseArray;
 
 import com.thescreenapp.dao.AbstractMutableRepository;
+import com.thescreenapp.dao.AbstractQuery;
 import com.thescreenapp.dao.Query;
 import com.thescreenapp.model.ScreenModelObject;
 
@@ -24,14 +23,13 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 	 * A {@link Query} that uses an Android SQLite {@link Cursor} to iterate
 	 * over its results.
 	 */
-	public class CursorQuery implements Query<T> {
+	public class CursorQuery extends AbstractQuery<T> {
 		private Cursor mCursor;
-		private boolean mMovedToFirst;
-		private T mCurrent;
+		private SparseArray<T> mIndexToObjectMap;
 		
 		public CursorQuery(Cursor cursor) {
 			mCursor = cursor;
-			mMovedToFirst = false;
+			mIndexToObjectMap = new SparseArray<T>();
 		}
 		
 		public Cursor getCursor() {
@@ -39,36 +37,22 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 		}
 		
 		@Override
-		public boolean next() {
-			boolean hasNext;
-			if (mMovedToFirst) {
-				hasNext = mCursor.moveToNext();
-			} else {
-				hasNext = mCursor.moveToFirst();
-				mMovedToFirst = true;
-			}
-			
-			mCurrent = hasNext ? readObject(mCursor) : null;
-			return hasNext;
+		public int count() {
+			return mCursor.getCount();
 		}
-
+		
 		@Override
-		public T current() throws IllegalStateException {
-			if (mCurrent == null) {
-				throw new IllegalStateException("No row is currently under the cursor");
+		public T get(int index) {
+			T object = mIndexToObjectMap.get(index);
+			if (object == null) {
+				if (mCursor.moveToPosition(index)) {
+					object = readObject(mCursor);
+					mIndexToObjectMap.put(index, object);
+				} else {
+					throw new IndexOutOfBoundsException("Could not move to cursor position " + index);
+				}
 			}
-			return mCurrent;
-		}
-
-		@Override
-		public List<T> all() {
-			List<T> results = new ArrayList<T>();
-			if (mCursor.moveToFirst()) {
-				do {
-					results.add(readObject(mCursor));
-				} while (mCursor.moveToNext());
-			}
-			return results;
+			return object;
 		}
 
 		@Override
@@ -76,7 +60,7 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 			if (mCursor != null) {
 				mCursor.close();
 				mCursor = null;
-				mCurrent = null;
+				mIndexToObjectMap = null;
 			}
 		}
 	}

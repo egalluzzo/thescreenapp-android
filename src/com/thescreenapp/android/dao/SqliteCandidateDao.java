@@ -5,9 +5,10 @@ import java.util.Date;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import com.thescreenapp.dao.CandidateDao;
 import com.thescreenapp.model.Candidate;
 
-public class SqliteCandidateDao extends AbstractSqliteRepository<Candidate> {
+public class SqliteCandidateDao extends AbstractSqliteRepository<Candidate> implements CandidateDao {
 	
     private static final String[] ALL_COLUMN_NAMES = new String[] {
     	ScreenContract.Candidate._ID,

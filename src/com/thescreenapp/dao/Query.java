@@ -45,6 +45,27 @@ public interface Query<T> extends Closeable {
 	public T current() throws IllegalStateException;
 	
 	/**
+	 * Returns the number of objects in this query.
+	 * 
+	 * @return  The number of objects in this query
+	 */
+	public int count();
+	
+	/**
+	 * Retrieves the object at a given position in this query.  If possible,
+	 * multiple calls to {@link #get(int)} with the same index should return
+	 * the same object.
+	 * 
+	 * @param index  The index of the object to retrieve (starting at 0)
+	 * 
+	 * @return  The object at the given index
+	 * 
+	 * @throws IndexOutOfBoundsException
+	 *     If the index is less than 0 or greater than or equal to {@link #count()}
+	 */
+	public T get(int index) throws IndexOutOfBoundsException;
+	
+	/**
 	 * Retrieves all the object in the query.  Even if {@link #next()} has been
 	 * called a number of times, this method should still return a list of all
 	 * entries in the query, not just the ones starting at the current point in
