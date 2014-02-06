@@ -47,7 +47,7 @@ public class BasicScreenModelObject implements ScreenModelObject {
 
 	@Override
 	public void setUpdateDate(Date updateDate) {
-		mCreationDate = updateDate;
+		mUpdateDate = updateDate;
 	}
 
 }
