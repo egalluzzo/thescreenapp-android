@@ -1,14 +1,21 @@
 package com.thescreenapp.android.view.candidate;
 
+import java.util.Date;
+
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.thescreenapp.android.R;
 import com.thescreenapp.android.content.QueryCreator;
 import com.thescreenapp.android.content.QueryLoader;
 import com.thescreenapp.android.dao.ScreenDbHelper;
@@ -46,7 +53,7 @@ public class CandidateListFragment extends ListFragment
 		setEmptyText("No candidates");
 
 //		// We have a menu item to show in action bar.
-//		setHasOptionsMenu(true);
+		setHasOptionsMenu(true);
 		
 		// FIXME: This should be injected.
 		mCandidateDao = new SqliteCandidateDao(new ScreenDbHelper(getActivity()));
@@ -91,6 +98,43 @@ public class CandidateListFragment extends ListFragment
 //		mSearchView.setIconifiedByDefault(true);
 //		item.setActionView(mSearchView);
 //	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		
+		inflater.inflate(R.menu.candidate, menu);
+        
+		super.onCreateOptionsMenu(menu, inflater);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+        if (id == R.id.action_add) {
+        	//TODO: open activity instead. This was just for testing
+        	//saveStubbedData();
+        	Toast
+	        	.makeText(getActivity(), "adding...", Toast.LENGTH_SHORT)
+	        	.show();
+            return true;
+        }
+		return super.onOptionsItemSelected(item);
+	}
+	
+	private void saveStubbedData() {
+		mCandidateDao.create(getStubbedData()); 
+	}
+	
+	private Candidate getStubbedData() {
+		Candidate candidate = new Candidate();
+    	candidate.setFirstName("Scooby");
+    	candidate.setLastName("Doo");
+    	candidate.setPhoneNumber("8675309");
+    	candidate.setRating(1);
+    	candidate.setUpdateDate(new Date());
+    	return candidate;
+	}
+	
 //
 //	public boolean onQueryTextChange(String newText) {
 //		// Called when the action bar search text has changed. Update
