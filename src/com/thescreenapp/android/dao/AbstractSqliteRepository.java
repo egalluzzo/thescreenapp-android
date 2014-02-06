@@ -3,6 +3,7 @@ package com.thescreenapp.android.dao;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.SparseArray;
 
 import com.thescreenapp.dao.AbstractMutableRepository;
@@ -38,7 +39,12 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 		
 		@Override
 		public int count() {
-			return mCursor.getCount();
+			if(mCursor != null && !mCursor.isClosed()){
+				int count = mCursor.getCount();
+				mCursor.close();
+				return count;
+		    } 
+			return -1;
 		}
 		
 		@Override
