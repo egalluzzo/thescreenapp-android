@@ -116,14 +116,7 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 	
 	protected Query<T> find(String selection, String[] selectionArgs, String sortBy, String limit) {
 		Cursor cursor = query(selection, selectionArgs, sortBy, limit);
-		try {
-			return new CursorQuery(cursor);
-		} finally {
-			//TODO: remove me
-			//let QueryLoader or other invoking class call
-			//close() on CursorQuery when they are ready
-			//cursor.close();
-		}
+		return new CursorQuery(cursor);
 	}
 	
 	protected T findSingle(String selection, String[] selectionArgs) {
