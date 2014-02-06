@@ -3,7 +3,6 @@ package com.thescreenapp.android.dao;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.util.SparseArray;
 
 import com.thescreenapp.dao.AbstractMutableRepository;
