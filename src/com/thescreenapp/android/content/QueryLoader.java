@@ -35,6 +35,7 @@ public class QueryLoader<T> extends AbstractLoader<Query<T>> {
 		Query<T> query = mQueryCreator.createQuery();
 		// Make sure the query is actually executed.
 		query.count();
+		query.close();
 		return query;
 	}
 

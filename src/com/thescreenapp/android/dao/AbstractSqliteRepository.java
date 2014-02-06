@@ -39,10 +39,9 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 		
 		@Override
 		public int count() {
+		    
 			if(mCursor != null && !mCursor.isClosed()){
-				int count = mCursor.getCount();
-				mCursor.close();
-				return count;
+				return mCursor.getCount();
 		    } 
 			return -1;
 		}
@@ -121,7 +120,10 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 		try {
 			return new CursorQuery(cursor);
 		} finally {
-			cursor.close();
+			//TODO: remove me
+			//let QueryLoader or other invoking class call
+			//close() on CursorQuery when they are ready
+			//cursor.close();
 		}
 	}
 	
