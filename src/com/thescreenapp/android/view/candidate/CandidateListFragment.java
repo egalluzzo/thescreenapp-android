@@ -115,7 +115,7 @@ public class CandidateListFragment extends ListFragment
         	//saveStubbedData();
         	Toast
 	        	.makeText(getActivity(), "adding...", Toast.LENGTH_SHORT)
-	        	.show();
+	        	.show(); 
             return true;
         }
 		return super.onOptionsItemSelected(item);
