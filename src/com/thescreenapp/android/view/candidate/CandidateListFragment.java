@@ -2,7 +2,11 @@ package com.thescreenapp.android.view.candidate;
 
 import java.util.Date;
 
+import android.content.ContentValues;
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -15,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jensdriller.libs.undobar.UndoBar;
 import com.thescreenapp.android.R;
 import com.thescreenapp.android.content.QueryCreator;
 import com.thescreenapp.android.content.QueryLoader;
@@ -37,8 +42,8 @@ public class CandidateListFragment extends ListFragment
 
 	protected static final int OUR_LOADER_ID = 0;
 	
-	CandidateDao mCandidateDao;
-
+	protected CandidateDao mCandidateDao;
+	
 	// This is the Adapter being used to display the list's data.
 	QueryAdapter<Candidate> mAdapter;
 
@@ -78,15 +83,37 @@ public class CandidateListFragment extends ListFragment
 
 					@Override
 					public void onDismiss(ListView listView,
-							int[] reverseSortedPositions) {
-						Query<Candidate> query = mAdapter.getQuery();
+							final int[] reverseSortedPositions) {
+						final Query<Candidate> beforeDismissedQuery = mAdapter.getQuery();
+						
+						Query<Candidate> query = beforeDismissedQuery;
 						for (int position : reverseSortedPositions) {
-							mCandidateDao.delete(mAdapter.getItem(position));
 							query = new QueryWrapperWithFakeDelete<Candidate>(query, position);
 						}
 						mAdapter.swapQuery(query);
-						getLoaderManager().restartLoader(OUR_LOADER_ID, null, CandidateListFragment.this);
-//						mAdapter.notifyDataSetChanged();
+						
+						new UndoBar.Builder(getActivity())//
+						  .setMessage(reverseSortedPositions.length + " candidate(s) deleted.")//
+						  .setListener(new UndoBar.Listener() {
+							@Override
+							public void onUndo(Parcelable token) {
+								mAdapter.swapQuery(beforeDismissedQuery);
+							}
+							@Override
+							public void onHide() {
+								// FIXME: On an orientation change, the app currently
+								//        reloads the query before the rows are deleted.
+								//        Therefore, they don't show up as being deleted.
+								//        This is bad, but I haven't figured out how to
+								//        fix this yet.
+								for (int position : reverseSortedPositions) {
+									mCandidateDao.delete(beforeDismissedQuery.get(position));
+								}
+								if( isAdded() ) {
+									getLoaderManager().restartLoader(OUR_LOADER_ID, null, CandidateListFragment.this);
+								}
+							}
+						}).show();
 					}
 				});
 		getListView().setOnTouchListener(touchListener);
@@ -101,7 +128,7 @@ public class CandidateListFragment extends ListFragment
 		// or start a new one.
 		getLoaderManager().initLoader(OUR_LOADER_ID, null, this);
 	}
-
+	
 //	public static class MySearchView extends SearchView {
 //		public MySearchView(Context context) {
 //			super(context);
@@ -147,7 +174,6 @@ public class CandidateListFragment extends ListFragment
 			Toast.makeText(getActivity(), "adding...", Toast.LENGTH_SHORT)
 					.show();
 			getLoaderManager().restartLoader(OUR_LOADER_ID, null, this);
-			
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -159,7 +185,7 @@ public class CandidateListFragment extends ListFragment
 
 	private Candidate getStubbedData() {
 		Candidate candidate = new Candidate();
-		candidate.setFirstName("Scooby");
+		candidate.setFirstName("Scooby" + System.currentTimeMillis());
 		candidate.setLastName("Doo");
 		candidate.setPhoneNumber("8675309");
 		candidate.setRating(1);
