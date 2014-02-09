@@ -33,7 +33,7 @@ public class QueryAdapter<T extends ScreenModelObject> extends BaseAdapter {
 	}
 
 	@Override
-	public Object getItem(int position) {
+	public T getItem(int position) {
 		return mQuery == null ? null : mQuery.get(position);
 	}
 
@@ -74,5 +74,9 @@ public class QueryAdapter<T extends ScreenModelObject> extends BaseAdapter {
 			}
 			return oldQuery;
 		}
+	}
+	
+	public Query<T> getQuery() {
+		return mQuery;
 	}
 }
