@@ -65,7 +65,7 @@ public class CandidateListFragment extends ListFragment
 
 		// Create an empty adapter we will use to display the loaded data.
 		mAdapter = new QueryAdapter<Candidate>(getActivity(), null,
-				android.R.layout.simple_list_item_2, this);
+				R.layout.list_item_candidate, this);
 		setListAdapter(mAdapter);
 
 		SwipeDismissListViewTouchListener touchListener = new SwipeDismissListViewTouchListener(
@@ -241,7 +241,10 @@ public class CandidateListFragment extends ListFragment
 
 	@Override
 	public void bindView(View view, Candidate candidate) {
-		((TextView) view.findViewById(android.R.id.text1)).setText(candidate
+		((TextView) view.findViewById(R.id.text_first_name)).setText(candidate
 				.getFirstName());
+		((TextView) view.findViewById(R.id.text_last_name)).setText(candidate
+				.getLastName());
+		((TextView) view.findViewById(R.id.text_meta_data)).setText("More meta-data(Could be anything here)");
 	}
 }
