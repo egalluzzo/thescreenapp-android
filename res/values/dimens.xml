@@ -8,4 +8,5 @@
     <dimen name="navigation_drawer_width">240dp</dimen>
     
     <dimen name="master_pane_width">300dp</dimen>
+    <dimen name="spacer_margin">8dp</dimen>
 </resources>
