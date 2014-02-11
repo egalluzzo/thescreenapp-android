@@ -9,6 +9,7 @@ public class Candidate extends BasicScreenModelObject {
 	private String mLastName;
 	private String mPhoneNumber;
 	private int mRating;
+	private String mEmail;
 	private Set<Interview> mInterviews = new HashSet<Interview>();
 	
 	public Candidate() {
@@ -35,6 +36,22 @@ public class Candidate extends BasicScreenModelObject {
 		mLastName = lastName;
 	}
 	
+	public String getFullName() {
+		if (mFirstName != null) {
+			if (mLastName != null) {
+				return mFirstName + " " + mLastName;
+			} else {
+				return mFirstName;
+			}
+		} else {
+			if (mLastName != null) {
+				return mLastName;
+			} else {
+				return "";
+			}
+		}
+	}
+	
 	public String getPhoneNumber() {
 		return mPhoneNumber;
 	}
@@ -49,6 +66,14 @@ public class Candidate extends BasicScreenModelObject {
 	
 	public void setRating(int rating) {
 		mRating = rating;
+	}
+
+	public String getEmail() {
+		return mEmail;
+	}
+
+	public void setEmail(String email) {
+		mEmail = email;
 	}
 	
 	public void addInterview(Interview interview) {

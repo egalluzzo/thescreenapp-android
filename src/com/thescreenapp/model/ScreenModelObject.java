@@ -9,4 +9,6 @@ public interface ScreenModelObject {
 	Date getCreationDate();
 	Date getUpdateDate();
 	void setUpdateDate(Date updateDate);
+	boolean isDeleted();
+	void setDeleted(boolean deleted);
 }

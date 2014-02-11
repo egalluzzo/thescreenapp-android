@@ -26,10 +26,30 @@ public interface MutableRepository<T extends ScreenModelObject> extends Reposito
 	void update(T object);
 	
 	/**
-	 * Deletes the given object from the repository (or at least the object with
-	 * the same ID).
+	 * Marks the given object from the repository as deleted (or at least the
+	 * object with the same ID).
 	 * 
-	 * @param object  The object to delete
+	 * @param object  The object to mark deleted
 	 */
 	void delete(T object);
+	
+	/**
+	 * Un-sets the deleted flag from the object with the given ID, if one
+	 * exists.
+	 * 
+	 * @param id  The ID of the object to restore
+	 */
+	void restore(long id);
+	
+	/**
+	 * <strong>Do not call this</strong> unless you are writing code that
+	 * synchronizes the local repository with a remote data source.  Normally
+	 * you should call {@link #markDeleted(ScreenModelObject)} instead.
+	 * 
+	 * <p>This method completely purges the given object from the repository (or
+	 * at least the object with the same ID).
+	 * 
+	 * @param object  The object to purge
+	 */
+	void purge(T object);
 }

@@ -33,9 +33,18 @@ public interface Repository<T extends ScreenModelObject> {
 	T findByUuid(String uuid);
 	
 	/**
-	 * Finds all objects in the repository.
+	 * Finds all non-deleted objects in the repository.
+	 * 
+	 * @return  A {@link Query} over all the non-deleted objects in the
+	 *          repository
+	 */
+	Query<T> findAll();
+	
+	/**
+	 * Finds all objects in the repository, including those that have been
+	 * deleted.
 	 * 
 	 * @return  A {@link Query} over all the objects in the repository
 	 */
-	Query<T> findAll();
+	Query<T> findAllIncludingDeleted();
 }

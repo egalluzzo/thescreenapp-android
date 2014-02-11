@@ -1,5 +1,6 @@
 package com.thescreenapp.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,17 @@ public class CachedMutableRepository<T extends ScreenModelObject> implements Mut
 
 	@Override
 	public Query<T> findAll() {
+		List<T> nonDeletedObjects = new ArrayList<T>();
+		for (T object : mIdToObjectMap.values()) {
+			if (!object.isDeleted()) {
+				nonDeletedObjects.add(object);
+			}
+		}
+		return new ListQuery<T>(nonDeletedObjects);
+	}
+
+	@Override
+	public Query<T> findAllIncludingDeleted() {
 		return new ListQuery<T>(mIdToObjectMap.values().iterator());
 	}
 	
@@ -62,9 +74,22 @@ public class CachedMutableRepository<T extends ScreenModelObject> implements Mut
 		mIdToObjectMap.put(object.getId(), object);
 		mUuidToObjectMap.put(object.getUuid(), object);
 	}
-
+	
 	@Override
 	public void delete(T object) {
+		object.setDeleted(true);
+	}
+	
+	@Override
+	public void restore(long id) {
+		T object = findById(id);
+		if (object != null) {
+			object.setDeleted(false);
+		}
+	}
+
+	@Override
+	public void purge(T object) {
 		mDelegate.delete(object);
 		mIdToObjectMap.remove(object.getId());
 		mUuidToObjectMap.remove(object.getUuid());

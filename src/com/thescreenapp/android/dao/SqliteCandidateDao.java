@@ -15,10 +15,12 @@ public class SqliteCandidateDao extends AbstractSqliteRepository<Candidate> impl
     	ScreenContract.Candidate.COLUMN_NAME_UUID,
     	ScreenContract.Candidate.COLUMN_NAME_CREATED,
     	ScreenContract.Candidate.COLUMN_NAME_UPDATED,
+    	ScreenContract.Candidate.COLUMN_NAME_DELETED,
     	ScreenContract.Candidate.COLUMN_NAME_FIRST_NAME,
     	ScreenContract.Candidate.COLUMN_NAME_LAST_NAME,
     	ScreenContract.Candidate.COLUMN_NAME_PHONE_NUMBER,
-    	ScreenContract.Candidate.COLUMN_NAME_RATING
+    	ScreenContract.Candidate.COLUMN_NAME_RATING,
+    	ScreenContract.Candidate.COLUMN_NAME_EMAIL
     };
     
 	public SqliteCandidateDao(ScreenDbHelper dbHelper) {
@@ -46,10 +48,12 @@ public class SqliteCandidateDao extends AbstractSqliteRepository<Candidate> impl
 		Candidate candidate = new Candidate(id, uuid, created);
 		
 		candidate.setUpdateDate(new Date(cursor.getLong(index++)));
+		candidate.setDeleted(intColumnToBoolean(cursor.getInt(index++)));
 		candidate.setFirstName(cursor.getString(index++));
 		candidate.setLastName(cursor.getString(index++));
 		candidate.setPhoneNumber(cursor.getString(index++));
 		candidate.setRating(cursor.getInt(index++));
+		candidate.setEmail(cursor.getString(index++));
 		
 		return candidate;
 	}
@@ -60,10 +64,12 @@ public class SqliteCandidateDao extends AbstractSqliteRepository<Candidate> impl
 		values.put(ScreenContract.Candidate.COLUMN_NAME_UUID, object.getUuid());
 		values.put(ScreenContract.Candidate.COLUMN_NAME_CREATED, object.getCreationDate().getTime());
 		values.put(ScreenContract.Candidate.COLUMN_NAME_UPDATED, object.getUpdateDate().getTime());
+		values.put(ScreenContract.Candidate.COLUMN_NAME_DELETED, booleanToIntColumn(object.isDeleted()));
 		values.put(ScreenContract.Candidate.COLUMN_NAME_FIRST_NAME, object.getFirstName());
 		values.put(ScreenContract.Candidate.COLUMN_NAME_LAST_NAME, object.getLastName());
 		values.put(ScreenContract.Candidate.COLUMN_NAME_PHONE_NUMBER, object.getPhoneNumber());
 		values.put(ScreenContract.Candidate.COLUMN_NAME_RATING, object.getRating());
+		values.put(ScreenContract.Candidate.COLUMN_NAME_EMAIL, object.getEmail());
 		
 		return values;
 	}

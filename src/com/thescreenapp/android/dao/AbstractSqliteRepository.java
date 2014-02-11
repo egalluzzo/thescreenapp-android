@@ -75,6 +75,16 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 
 	@Override
 	public void delete(ScreenModelObject object) {
+		markDeleted(object.getId(), true);
+	}
+
+	@Override
+	public void restore(long id) {
+		markDeleted(id, false);
+	}
+
+	@Override
+	public void purge(ScreenModelObject object) {
 		mDbHelper.getWritableDatabase().delete(getTableName(), ScreenBaseColumns._ID + " = ?", new String[] { String.valueOf(object.getId()) });
 	}
 
@@ -90,7 +100,18 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 
 	@Override
 	public Query<T> findAll() {
+		return find(ScreenBaseColumns.COLUMN_NAME_DELETED + " = 0", null);
+	}
+
+	@Override
+	public Query<T> findAllIncludingDeleted() {
 		return find(null, null);
+	}
+	
+	protected void markDeleted(long id, boolean deleted) {
+		ContentValues values = new ContentValues();
+		values.put(ScreenBaseColumns.COLUMN_NAME_DELETED, booleanToIntColumn(deleted));
+		mDbHelper.getWritableDatabase().update(getTableName(), values, ScreenBaseColumns._ID + " = ?", new String[] { String.valueOf(id) });
 	}
 
 	@Override
@@ -139,6 +160,14 @@ public abstract class AbstractSqliteRepository<T extends ScreenModelObject> exte
 	
 	protected Cursor query(String selection, String[] selectionArgs, String sortBy, String limit) {
 		return mDbHelper.getReadableDatabase().query(getTableName(), getColumnNames(), selection, selectionArgs, null, null, sortBy, limit);
+	}
+	
+	protected boolean intColumnToBoolean(int value) {
+		return (value != 0);
+	}
+	
+	protected int booleanToIntColumn(boolean value) {
+		return value ? 1 : 0;
 	}
 
 	/**

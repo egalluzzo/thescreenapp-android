@@ -8,10 +8,12 @@ public class BasicScreenModelObject implements ScreenModelObject {
 	private String mUuid;
 	private Date mCreationDate;
 	private Date mUpdateDate;
+	private boolean mDeleted;
 	
 	public BasicScreenModelObject() {
 		mUuid = UUID.randomUUID().toString();
 		mCreationDate = new Date();
+		mDeleted = false;
 	}
 	
 	public BasicScreenModelObject(long id, String uuid, Date creationDate) {
@@ -50,4 +52,13 @@ public class BasicScreenModelObject implements ScreenModelObject {
 		mUpdateDate = updateDate;
 	}
 
+	@Override
+	public boolean isDeleted() {
+		return mDeleted;
+	}
+
+	@Override
+	public void setDeleted(boolean deleted) {
+		mDeleted = deleted;
+	}
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 public class Interview extends BasicScreenModelObject {
 	private String mLocation;
 	private Date mInterviewDate;
+	private int mDurationInMinutes;
 	private Candidate mCandidate;
 	
 	public Interview() {
@@ -31,6 +32,14 @@ public class Interview extends BasicScreenModelObject {
 		mInterviewDate = interviewDate;
 	}
 	
+	public int getDurationInMinutes() {
+		return mDurationInMinutes;
+	}
+
+	public void setDurationInMinutes(int durationInMinutes) {
+		mDurationInMinutes = durationInMinutes;
+	}
+
 	public Candidate getCandidate() {
 		return mCandidate;
 	}
