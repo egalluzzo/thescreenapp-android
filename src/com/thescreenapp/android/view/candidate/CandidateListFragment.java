@@ -1,8 +1,11 @@
 package com.thescreenapp.android.view.candidate;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -15,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jensdriller.libs.undobar.UndoBar;
 import com.thescreenapp.android.R;
 import com.thescreenapp.android.content.QueryCreator;
 import com.thescreenapp.android.content.QueryLoader;
@@ -80,13 +84,34 @@ public class CandidateListFragment extends ListFragment
 					public void onDismiss(ListView listView,
 							int[] reverseSortedPositions) {
 						Query<Candidate> query = mAdapter.getQuery();
+						final List<Long> deletedIds = new ArrayList<Long>();
 						for (int position : reverseSortedPositions) {
-							mCandidateDao.delete(mAdapter.getItem(position));
+							Candidate candidate = mAdapter.getItem(position);
+							mCandidateDao.delete(candidate);
+							deletedIds.add(candidate.getId());
 							query = new QueryWrapperWithFakeDelete<Candidate>(query, position);
 						}
 						mAdapter.swapQuery(query);
 						getLoaderManager().restartLoader(OUR_LOADER_ID, null, CandidateListFragment.this);
 //						mAdapter.notifyDataSetChanged();
+						new UndoBar.Builder(getActivity())
+							.setMessage(reverseSortedPositions.length  + " candidate(s) deleted")
+							.setListener(new UndoBar.Listener() {
+								@Override
+								public void onUndo(Parcelable token) {
+									for (Long id : deletedIds) {
+										mCandidateDao.restore(id);
+									}
+									//this will open a new query for us. 
+									//We just need to make sure the candidates are restored. 
+									getLoaderManager().restartLoader(OUR_LOADER_ID, null, CandidateListFragment.this);
+								}
+								@Override
+								public void onHide() {
+									//do not have to do anything since it is already marked for deletion. 
+								}
+							})
+							.show(true);
 					}
 				});
 		getListView().setOnTouchListener(touchListener);
@@ -162,6 +187,7 @@ public class CandidateListFragment extends ListFragment
 		candidate.setFirstName("Scooby");
 		candidate.setLastName("Doo");
 		candidate.setPhoneNumber("8675309");
+		candidate.setEmail("scooby@doo.com");
 		candidate.setRating(1);
 		candidate.setUpdateDate(new Date());
 		return candidate;
@@ -241,10 +267,8 @@ public class CandidateListFragment extends ListFragment
 
 	@Override
 	public void bindView(View view, Candidate candidate) {
-		((TextView) view.findViewById(R.id.text_first_name)).setText(candidate
-				.getFirstName());
-		((TextView) view.findViewById(R.id.text_last_name)).setText(candidate
-				.getLastName());
-		((TextView) view.findViewById(R.id.text_meta_data)).setText("More meta-data(Could be anything here)");
+		((TextView) view.findViewById(R.id.text_name)).setText(candidate
+				.getFullName());
+		((TextView) view.findViewById(R.id.text_email)).setText(candidate.getEmail());
 	}
 }
