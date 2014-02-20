@@ -113,7 +113,6 @@ public class MainActivity extends FragmentActivity
     @Override
     public void onBackPressed() {
     	if( ! getSupportFragmentManager().getFragments().isEmpty() ) {
-    		//the first one is the drawer... so kludgey :(
     		//TODO: add a listener maybe for the master details frag
     		//to better handle this popping off stacks
     		//it will work for tablets because there is no stack...
@@ -122,16 +121,23 @@ public class MainActivity extends FragmentActivity
     		//just first instinct thinks that the master details frag
     		//should handle the popping, not the weird way to access it
     		//from the main activity.
-			Fragment f = getSupportFragmentManager().getFragments().get(1);
-			FragmentManager fm = f.getChildFragmentManager();
-		    if (fm.getBackStackEntryCount() > 0) {
-		        Log.i("MainActivity", "popping backstack");
-		        fm.popBackStack();
-		    } else {
-		        Log.i("MainActivity", "nothing on backstack, calling super");
-		        super.onBackPressed();  
-		    }
-    	}else {
+    		for( Fragment f : getSupportFragmentManager().getFragments() ) {
+    			//the first one is the drawer... so kludgey :(
+    			//what happens if there is more than 1 master detail frag 
+    			//in the manager??
+    			if( f instanceof MasterDetailFragment ) {
+	    			FragmentManager fm = f.getChildFragmentManager();
+	    			if (fm.getBackStackEntryCount() > 0) {
+	    				Log.i("MainActivity", "popping backstack");
+	    				fm.popBackStack();
+	    			} else {
+	    				Log.i("MainActivity", "nothing on backstack, calling super");
+	    				super.onBackPressed();  
+	    			}
+	    			return;
+    			}
+    		}
+    	} else {
     		super.onBackPressed();
     	}
     }
