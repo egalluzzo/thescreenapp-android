@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -67,6 +68,7 @@ public class MainActivity extends FragmentActivity
                 .commit();
     }
 
+    @Override
     public void onSectionAttached(MasterDetailFragment fragment) {
     	if (fragment instanceof NavigationBarFragment) {
     		mTitle = ((NavigationBarFragment)fragment).getTitle();
@@ -74,7 +76,7 @@ public class MainActivity extends FragmentActivity
     		mTitle = getString(R.string.app_name);
     	}
     }
-
+    
     public void restoreActionBar() {
         ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
@@ -106,5 +108,31 @@ public class MainActivity extends FragmentActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    @Override
+    public void onBackPressed() {
+    	if( ! getSupportFragmentManager().getFragments().isEmpty() ) {
+    		//the first one is the drawer... so kludgey :(
+    		//TODO: add a listener maybe for the master details frag
+    		//to better handle this popping off stacks
+    		//it will work for tablets because there is no stack...
+    		//maybe it is fine the way it is and will handle all cases?
+    		//too tired to finish thinking though...
+    		//just first instinct thinks that the master details frag
+    		//should handle the popping, not the weird way to access it
+    		//from the main activity.
+			Fragment f = getSupportFragmentManager().getFragments().get(1);
+			FragmentManager fm = f.getChildFragmentManager();
+		    if (fm.getBackStackEntryCount() > 0) {
+		        Log.i("MainActivity", "popping backstack");
+		        fm.popBackStack();
+		    } else {
+		        Log.i("MainActivity", "nothing on backstack, calling super");
+		        super.onBackPressed();  
+		    }
+    	}else {
+    		super.onBackPressed();
+    	}
     }
 }

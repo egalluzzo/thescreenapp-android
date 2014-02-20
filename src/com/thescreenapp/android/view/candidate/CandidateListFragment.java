@@ -24,6 +24,7 @@ import com.thescreenapp.android.content.QueryCreator;
 import com.thescreenapp.android.content.QueryLoader;
 import com.thescreenapp.android.dao.ScreenDbHelper;
 import com.thescreenapp.android.dao.SqliteCandidateDao;
+import com.thescreenapp.android.view.MasterListFragment;
 import com.thescreenapp.android.view.QueryWrapperWithFakeDelete;
 import com.thescreenapp.android.view.SwipeDismissListViewTouchListener;
 import com.thescreenapp.android.widget.QueryAdapter;
@@ -32,7 +33,7 @@ import com.thescreenapp.dao.CandidateDao;
 import com.thescreenapp.dao.Query;
 import com.thescreenapp.model.Candidate;
 
-public class CandidateListFragment extends ListFragment
+public class CandidateListFragment extends MasterListFragment
 		implements
 		// OnQueryTextListener,
 		// OnCloseListener,
@@ -169,8 +170,7 @@ public class CandidateListFragment extends ListFragment
 		if (id == R.id.action_add) {
 			// TODO: open activity instead. This was just for testing
 			saveStubbedData();
-			Toast.makeText(getActivity(), "adding...", Toast.LENGTH_SHORT)
-					.show();
+
 			getLoaderManager().restartLoader(OUR_LOADER_ID, null, this);
 			
 			return true;
@@ -230,6 +230,7 @@ public class CandidateListFragment extends ListFragment
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		// Insert desired behavior here.
 		Log.i("FragmentComplexList", "Item clicked: " + id);
+		openDetails(mAdapter.getItem(position));
 	}
 
 	@Override
@@ -248,12 +249,17 @@ public class CandidateListFragment extends ListFragment
 		// Swap the new query in. (The loader will take care of closing
 		// the old query once we return.)
 		mAdapter.swapQuery(query);
-
+		
 		// The list should now be shown.
 		if (isResumed()) {
 			setListShown(true);
 		} else {
 			setListShownNoAnimation(true);
+		}
+		
+		//load the first detail if needed as well
+		if( mAdapter.getCount() > 0 ) {
+			initDetail(mAdapter.getItem(0));
 		}
 	}
 

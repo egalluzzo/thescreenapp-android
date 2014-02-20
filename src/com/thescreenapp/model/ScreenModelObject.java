@@ -1,8 +1,9 @@
 package com.thescreenapp.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public interface ScreenModelObject {
+public interface ScreenModelObject extends Serializable {
 	long getId();
 	void setId(long id);
 	String getUuid();

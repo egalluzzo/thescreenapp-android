@@ -3,6 +3,7 @@ package com.thescreenapp.android.view.candidate;
 import android.support.v4.app.Fragment;
 
 import com.thescreenapp.android.R;
+import com.thescreenapp.android.view.DetailsFragment;
 import com.thescreenapp.android.view.MasterDetailFragment;
 import com.thescreenapp.android.view.NavigationBarFragment;
 
@@ -19,7 +20,7 @@ public class CandidateMasterDetailFragment extends MasterDetailFragment implemen
 	}
 
 	@Override
-	protected Fragment getDetailFragment() {
+	protected DetailsFragment getDetailFragment() {
 		return new CandidateDetailFragment();
 	}
 

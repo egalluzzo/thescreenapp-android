@@ -1,7 +1,14 @@
 package com.thescreenapp.android.view.interview;
 
-import android.support.v4.app.Fragment;
+import com.thescreenapp.android.view.DetailsFragment;
+import com.thescreenapp.model.ScreenModelObject;
 
-public class InterviewDetailFragment extends Fragment {
+public class InterviewDetailFragment extends DetailsFragment {
 
+	@Override
+	public void loadDetails(ScreenModelObject detail) {
+		
+	}
+
+	
 }
