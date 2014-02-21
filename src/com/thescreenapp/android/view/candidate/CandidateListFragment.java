@@ -1,12 +1,11 @@
 package com.thescreenapp.android.view.candidate;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jensdriller.libs.undobar.UndoBar;
 import com.thescreenapp.android.R;
@@ -85,7 +83,7 @@ public class CandidateListFragment extends MasterListFragment
 					public void onDismiss(ListView listView,
 							int[] reverseSortedPositions) {
 						Query<Candidate> query = mAdapter.getQuery();
-						final List<Long> deletedIds = new ArrayList<Long>();
+						final Set<Long> deletedIds = new HashSet<Long>();
 						for (int position : reverseSortedPositions) {
 							Candidate candidate = mAdapter.getItem(position);
 							mCandidateDao.delete(candidate);
