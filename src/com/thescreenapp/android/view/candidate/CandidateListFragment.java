@@ -1,6 +1,5 @@
 package com.thescreenapp.android.view.candidate;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,10 +39,10 @@ public class CandidateListFragment extends MasterListFragment
 
 	protected static final int OUR_LOADER_ID = 0;
 	
-	CandidateDao mCandidateDao;
+	protected CandidateDao mCandidateDao;
 
 	// This is the Adapter being used to display the list's data.
-	QueryAdapter<Candidate> mAdapter;
+	protected QueryAdapter<Candidate> mAdapter;
 
 	// // The SearchView for doing filtering.
 	// SearchView mSearchView;
@@ -91,6 +90,17 @@ public class CandidateListFragment extends MasterListFragment
 							query = new QueryWrapperWithFakeDelete<Candidate>(query, position);
 						}
 						mAdapter.swapQuery(query);
+						//TODO: FIXME!
+						//if there are any items left after deleting one, 
+						//default to first? Safest option. What if they
+						//delete the item they are looking at? Move the details
+						//to whom? Defaulting to first until there is clarity.
+						if( mAdapter.getCount() > 0 ) {
+							openDetails(mAdapter.getItem(0));
+						} else {
+							//if no one is left, time to add a new guy.
+							openAddDetails();
+						}
 						getLoaderManager().restartLoader(OUR_LOADER_ID, null, CandidateListFragment.this);
 //						mAdapter.notifyDataSetChanged();
 						new UndoBar.Builder(getActivity())
@@ -166,29 +176,10 @@ public class CandidateListFragment extends MasterListFragment
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == R.id.action_add) {
-			// TODO: open activity instead. This was just for testing
-			saveStubbedData();
-
-			getLoaderManager().restartLoader(OUR_LOADER_ID, null, this);
-			
+			openAddDetails();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	private void saveStubbedData() {
-		mCandidateDao.create(getStubbedData());
-	}
-
-	private Candidate getStubbedData() {
-		Candidate candidate = new Candidate();
-		candidate.setFirstName("Scooby");
-		candidate.setLastName("Doo");
-		candidate.setPhoneNumber("8675309");
-		candidate.setEmail("scooby@doo.com");
-		candidate.setRating(1);
-		candidate.setUpdateDate(new Date());
-		return candidate;
 	}
 
 	//
@@ -258,6 +249,8 @@ public class CandidateListFragment extends MasterListFragment
 		//load the first detail if needed as well
 		if( mAdapter.getCount() > 0 ) {
 			initDetail(mAdapter.getItem(0));
+		} else {
+			openAddDetails();
 		}
 	}
 

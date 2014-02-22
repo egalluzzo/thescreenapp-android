@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 public abstract class DetailsFragment extends Fragment {
 	
 	public final static String EXTRA_DETAILS_ID = "com.thescreenapp.android.view.EXTRA_DETAILS_ID";
+	public final static String EXTRA_DETAILS_ADD_MODE = "com.thescreenapp.android.view.EXTRA_DETAILS_ADD_MODE";
 	
 	public abstract void loadDetails(ScreenModelObject detail);
+	
+	public abstract void openAddDetails();
 }

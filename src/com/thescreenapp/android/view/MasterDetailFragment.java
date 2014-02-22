@@ -3,7 +3,6 @@ package com.thescreenapp.android.view;
 import java.io.Serializable;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -87,6 +86,32 @@ public abstract class MasterDetailFragment extends Fragment implements Serializa
 			
 			Bundle bundle = new Bundle();
 	    	bundle.putSerializable(DetailsFragment.EXTRA_DETAILS_ID, detail);
+	    	
+	    	DetailsFragment detailFrag = getNonNullDetailFragment();
+			detailFrag.setArguments(bundle);
+			
+			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+			//do not want to remove, just move to the background
+			transaction.addToBackStack(MASTER_FRAG_TAG);
+			transaction.hide(masterFrag);
+
+			transaction.add(R.id.section_master_detail, detailFrag,DETAILS_FRAG_TAG);
+			
+			transaction.commit();
+		}
+    }
+    
+    @Override
+    public void openAddDetails() {
+    	if (detailsInline) {
+    		((DetailsFragment) 
+        			getChildFragmentManager().findFragmentByTag(DETAILS_FRAG_TAG))
+        				.openAddDetails();
+		} else {
+			Fragment masterFrag = getChildFragmentManager().findFragmentByTag(MASTER_FRAG_TAG);
+			
+			Bundle bundle = new Bundle();
+	    	bundle.putSerializable(DetailsFragment.EXTRA_DETAILS_ADD_MODE, true);
 	    	
 	    	DetailsFragment detailFrag = getNonNullDetailFragment();
 			detailFrag.setArguments(bundle);

@@ -1,10 +1,9 @@
 package com.thescreenapp.android.view;
 
-import com.thescreenapp.model.Candidate;
-import com.thescreenapp.model.ScreenModelObject;
-
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+
+import com.thescreenapp.model.ScreenModelObject;
 
 public abstract class MasterListFragment extends ListFragment {
 	
@@ -13,6 +12,7 @@ public abstract class MasterListFragment extends ListFragment {
 	public static interface DetailsListener {
 		void initDetail(ScreenModelObject detail);
 		void openDetails(ScreenModelObject detail);
+		void openAddDetails();
 	}
 	
 	DetailsListener mDetailsListener;
@@ -34,4 +34,7 @@ public abstract class MasterListFragment extends ListFragment {
 		mDetailsListener.openDetails(detail);
 	}
 	
+	public void openAddDetails() {
+		mDetailsListener.openAddDetails();
+	}
 }
