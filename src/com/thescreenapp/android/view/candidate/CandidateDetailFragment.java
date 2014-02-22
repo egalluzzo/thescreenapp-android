@@ -129,7 +129,7 @@ public class CandidateDetailFragment extends DetailsFragment {
 			//once added, then we need to change the button text under the covers
 			((Button)getView().findViewById(R.id.button_submit)).setText(R.string.action_update);
 			
-			//TODO: Update the list on the left hand side...
+			updateMaster();
 		}
 	}
 	

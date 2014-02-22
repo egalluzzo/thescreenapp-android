@@ -15,7 +15,8 @@ import com.thescreenapp.android.R;
 import com.thescreenapp.android.view.MasterListFragment.DetailsListener;
 import com.thescreenapp.model.ScreenModelObject;
 
-public abstract class MasterDetailFragment extends Fragment implements Serializable, DetailsListener {
+public abstract class MasterDetailFragment extends Fragment 
+	implements Serializable, DetailsListener {
 
 	private static final long serialVersionUID = 8045372239266387723L;
 	private static final String MASTER_FRAG_TAG = "master_frag_tag";
@@ -31,13 +32,19 @@ public abstract class MasterDetailFragment extends Fragment implements Serializa
             Bundle savedInstanceState) {
     	View rootView;
     	
-    	Bundle bundle = new Bundle();
-    	bundle.putSerializable(MasterListFragment.EXTRA_DETAILS_LISTENER, this);
+    	Bundle bundleForMaster = new Bundle();
+    	bundleForMaster.putSerializable(MasterListFragment.EXTRA_DETAILS_LISTENER, this);
     	
-    	Fragment masterFragment = getMasterFragment();
-    	masterFragment.setArguments(bundle);
+    	//TODO: FIXME! how to make this more generic? What if it is not 
+    	//list/details setup? What if it is a two pane view?
+    	MasterListFragment masterFragment = (MasterListFragment) getMasterFragment();
+    	masterFragment.setArguments(bundleForMaster);
+    	
+    	Bundle bundleForDeatils = new Bundle();
+    	bundleForDeatils.putSerializable(DetailsFragment.EXTRA_MASTER_LISTENER, masterFragment);
     	
     	Fragment detailFragment = getDetailFragment();
+    	detailFragment.setArguments(bundleForDeatils);
     	
     	// On a tablet (600+ dp width), display master and detail side-by-side.
     	// On a phone (< 600 dp width), display just the master fragment.

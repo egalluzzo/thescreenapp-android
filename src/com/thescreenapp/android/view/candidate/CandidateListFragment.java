@@ -37,6 +37,8 @@ public class CandidateListFragment extends MasterListFragment
 		ViewBinding<View, Candidate>,
 		LoaderManager.LoaderCallbacks<Query<Candidate>> {
 
+	private static final long serialVersionUID = 1322349121775672944L;
+
 	protected static final int OUR_LOADER_ID = 0;
 	
 	protected CandidateDao mCandidateDao;
@@ -267,5 +269,10 @@ public class CandidateListFragment extends MasterListFragment
 		((TextView) view.findViewById(R.id.text_name)).setText(candidate
 				.getFullName());
 		((TextView) view.findViewById(R.id.text_email)).setText(candidate.getEmail());
+	}
+	
+	@Override
+	protected void doUpdate() {
+		getLoaderManager().restartLoader(OUR_LOADER_ID, null, CandidateListFragment.this);
 	}
 }

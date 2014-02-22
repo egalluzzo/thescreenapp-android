@@ -1,12 +1,17 @@
 package com.thescreenapp.android.view;
 
+import java.io.Serializable;
+
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 
+import com.thescreenapp.android.view.DetailsFragment.MasterListener;
 import com.thescreenapp.model.ScreenModelObject;
 
-public abstract class MasterListFragment extends ListFragment {
+public abstract class MasterListFragment extends ListFragment 
+	implements Serializable, MasterListener {
 	
+	private static final long serialVersionUID = 5626896934033946319L;
 	public final static String EXTRA_DETAILS_LISTENER = "com.thescreenapp.android.view.EXTRA_DETAILS_LISTENER";
 	
 	public static interface DetailsListener {
@@ -15,7 +20,7 @@ public abstract class MasterListFragment extends ListFragment {
 		void openAddDetails();
 	}
 	
-	DetailsListener mDetailsListener;
+	protected DetailsListener mDetailsListener;
 	
 	@Override
 	public void setArguments(Bundle bundle) {
@@ -37,4 +42,11 @@ public abstract class MasterListFragment extends ListFragment {
 	public void openAddDetails() {
 		mDetailsListener.openAddDetails();
 	}
+	
+	@Override
+	public void update() {
+		doUpdate();
+	}
+	
+	protected abstract void doUpdate();
 }
