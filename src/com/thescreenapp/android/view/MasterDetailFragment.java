@@ -89,22 +89,10 @@ public abstract class MasterDetailFragment extends Fragment
     	if (detailsInline) {
 			loadDetailInline(detail);
 		} else {
-			Fragment masterFrag = getChildFragmentManager().findFragmentByTag(MASTER_FRAG_TAG);
-			
 			Bundle bundle = new Bundle();
 	    	bundle.putSerializable(DetailsFragment.EXTRA_DETAILS_ID, detail);
 	    	
-	    	DetailsFragment detailFrag = getNonNullDetailFragment();
-			detailFrag.setArguments(bundle);
-			
-			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-			//do not want to remove, just move to the background
-			transaction.addToBackStack(MASTER_FRAG_TAG);
-			transaction.hide(masterFrag);
-
-			transaction.add(R.id.section_master_detail, detailFrag,DETAILS_FRAG_TAG);
-			
-			transaction.commit();
+	    	bringDetailsFragmentToFront(bundle);
 		}
     }
     
@@ -115,24 +103,30 @@ public abstract class MasterDetailFragment extends Fragment
         			getChildFragmentManager().findFragmentByTag(DETAILS_FRAG_TAG))
         				.openAddDetails();
 		} else {
-			Fragment masterFrag = getChildFragmentManager().findFragmentByTag(MASTER_FRAG_TAG);
-			
 			Bundle bundle = new Bundle();
 	    	bundle.putSerializable(DetailsFragment.EXTRA_DETAILS_ADD_MODE, true);
 	    	
-	    	DetailsFragment detailFrag = getNonNullDetailFragment();
-			detailFrag.setArguments(bundle);
-			
-			FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-			//do not want to remove, just move to the background
-			transaction.addToBackStack(MASTER_FRAG_TAG);
-			transaction.hide(masterFrag);
-
-			transaction.add(R.id.section_master_detail, detailFrag,DETAILS_FRAG_TAG);
-			
-			transaction.commit();
+	    	bringDetailsFragmentToFront(bundle);
 		}
     }
+
+	private void bringDetailsFragmentToFront(Bundle bundle) {
+		MasterListFragment masterFrag = (MasterListFragment) getChildFragmentManager()
+				.findFragmentByTag(MASTER_FRAG_TAG);
+		bundle.putSerializable(DetailsFragment.EXTRA_MASTER_LISTENER, masterFrag);
+		
+		DetailsFragment detailFrag = getNonNullDetailFragment();
+		detailFrag.setArguments(bundle);
+		
+		FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+		//do not want to remove, just move to the background
+		transaction.addToBackStack(MASTER_FRAG_TAG);
+		transaction.hide(masterFrag);
+
+		transaction.add(R.id.section_master_detail, detailFrag,DETAILS_FRAG_TAG);
+		
+		transaction.commit();
+	}
     
     private void loadDetailInline(ScreenModelObject detail) {
     	DetailsFragment detailFrag = (DetailsFragment) 
