@@ -98,10 +98,10 @@ public class CandidateListFragment extends MasterListFragment
 						//delete the item they are looking at? Move the details
 						//to whom? Defaulting to first until there is clarity.
 						if( mAdapter.getCount() > 0 ) {
-							openDetails(mAdapter.getItem(0));
+							openDetailsIfScreenSizeIsBigEnough(mAdapter.getItem(0));
 						} else {
 							//if no one is left, time to add a new guy.
-							openAddDetails();
+							openAddDetailsIfScreenSizeIsBigEnough();
 						}
 						getLoaderManager().restartLoader(OUR_LOADER_ID, null, CandidateListFragment.this);
 //						mAdapter.notifyDataSetChanged();

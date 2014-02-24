@@ -97,6 +97,13 @@ public abstract class MasterDetailFragment extends Fragment
     }
     
     @Override
+    public void openDetailsIfScreenSizeIsBigEnough(ScreenModelObject detail) {
+    	if( detailsInline ) {
+    		openDetails(detail);
+    	}
+    }
+    
+    @Override
     public void openAddDetails() {
     	if (detailsInline) {
     		((DetailsFragment) 
@@ -109,7 +116,14 @@ public abstract class MasterDetailFragment extends Fragment
 	    	bringDetailsFragmentToFront(bundle);
 		}
     }
-
+    
+    @Override
+    public void openAddDetailsIfScreenSizeIsBigEnough() {
+    	if( detailsInline ) {
+    		openAddDetails();
+    	}
+    }
+    
 	private void bringDetailsFragmentToFront(Bundle bundle) {
 		MasterListFragment masterFrag = (MasterListFragment) getChildFragmentManager()
 				.findFragmentByTag(MASTER_FRAG_TAG);

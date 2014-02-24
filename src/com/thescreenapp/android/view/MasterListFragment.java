@@ -17,7 +17,9 @@ public abstract class MasterListFragment extends ListFragment
 	public static interface DetailsListener {
 		void initDetail(ScreenModelObject detail);
 		void openDetails(ScreenModelObject detail);
+		void openDetailsIfScreenSizeIsBigEnough(ScreenModelObject detail);
 		void openAddDetails();
+		void openAddDetailsIfScreenSizeIsBigEnough();
 	}
 	
 	protected DetailsListener mDetailsListener;
@@ -39,8 +41,16 @@ public abstract class MasterListFragment extends ListFragment
 		mDetailsListener.openDetails(detail);
 	}
 	
+	public void openDetailsIfScreenSizeIsBigEnough(ScreenModelObject detail) {
+		mDetailsListener.openDetailsIfScreenSizeIsBigEnough(detail);
+	}
+	
 	public void openAddDetails() {
 		mDetailsListener.openAddDetails();
+	}
+	
+	public void openAddDetailsIfScreenSizeIsBigEnough() {
+		mDetailsListener.openAddDetailsIfScreenSizeIsBigEnough();
 	}
 	
 	@Override
